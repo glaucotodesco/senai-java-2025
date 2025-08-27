@@ -39,5 +39,15 @@ public class ProductService {
         return repository.save(product);
     }
 
+
+    public void updateProduct(Product product, long id)
+    {
+        Product aux = repository.getReferenceById(id);
+        aux.setName(product.getName());
+        aux.setPrice(product.getPrice());
+
+        repository.save(aux);
+    }
+
     
 }

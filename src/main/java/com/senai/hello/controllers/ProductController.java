@@ -1,5 +1,6 @@
 package com.senai.hello.controllers;
 
+import java.net.URI;
 import java.util.List;
 
 import org.apache.catalina.connector.Response;
@@ -9,9 +10,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.senai.hello.entities.Product;
 import com.senai.hello.repositories.ProductRepository;
@@ -44,14 +47,30 @@ public class ProductController {
     }
 
 
-    @PostMapping
+   @PostMapping
     public ResponseEntity<Product> saveProduct(@RequestBody Product product)
     {
         Product newProduct = service.saveProduct(product);
-        return ResponseEntity.created(null)
+        
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(newProduct.getId())
+                .toUri();
+
+        return ResponseEntity.created(location)
                              .body(newProduct);
     }
 
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> updateProduct( @PathVariable long id,
+                                               @RequestBody Product product
+                                              )
+    {
+        service.updateProduct(product, id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
